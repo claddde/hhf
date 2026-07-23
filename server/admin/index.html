@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HoodLust — Admin Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  :root{--face:#c0c0c0;--hi:#fff;--lite:#dfdfdf;--sh:#808080;--dk:#0a0a0a;--navy:#000080;--navy2:#1084d0}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Tahoma,'MS Sans Serif',sans-serif;font-size:12px;background:#0e3b3b;color:#000;min-height:100vh;padding:16px}
+  .win{background:var(--face);padding:3px;margin:0 auto 16px;max-width:1080px;box-shadow:inset -1px -1px var(--dk),inset 1px 1px var(--hi),inset -2px -2px var(--sh),inset 2px 2px var(--lite)}
+  .tb{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--navy),var(--navy2));color:#fff;padding:4px 6px;font-weight:bold}
+  .body{padding:12px}
+  h2{font-family:'Press Start 2P',monospace;font-size:13px;color:#7d1330;margin:2px 0 10px}
+  button{font-family:inherit;font-size:12px;background:var(--face);padding:5px 10px;border:none;cursor:pointer;box-shadow:inset -1px -1px var(--dk),inset 1px 1px var(--hi),inset -2px -2px var(--sh),inset 2px 2px var(--lite)}
+  button:active{box-shadow:inset 1px 1px var(--dk),inset -1px -1px var(--hi)}
+  input,select{font-family:inherit;font-size:12px;padding:3px 5px;background:#fff;border:none;box-shadow:inset -1px -1px var(--hi),inset 1px 1px var(--sh)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+  .card{padding:10px;box-shadow:inset -1px -1px var(--hi),inset 1px 1px var(--sh);text-align:center}
+  .card b{display:block;font-family:'Press Start 2P',monospace;font-size:16px;color:#7d1330;margin-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:11px}
+  th,td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--sh)}
+  th{color:#7d1330}
+  .muted{color:#555;font-size:11px}
+  .pill{display:inline-block;padding:2px 6px;background:#d8d0e8;box-shadow:inset -1px -1px var(--dk),inset 1px 1px var(--hi)}
+  .danger{color:#b01030}
+  #log{max-height:200px;overflow:auto;font-family:monospace;font-size:10px;background:#fff;padding:6px;box-shadow:inset 1px 1px var(--sh)}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <div class="win">
+    <div class="tb"><span>&#9881; HoodLust Admin Dashboard</span><span id="who">not signed in</span></div>
+    <div class="body">
+      <div class="row">
+        <label>API Base <input id="api" value="http://localhost:8080" size="34" /></label>
+        <button id="btn-connect">Connect Wallet &amp; Sign In</button>
+        <label class="muted">or paste token <input id="token" size="24" placeholder="admin JWT" /></label>
+        <button id="btn-token">Use Token</button>
+      </div>
+      <div class="muted">Admin access requires a wallet listed in <code>ADMIN_WALLETS</code>. All actions are audited server-side.</div>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
+    <!-- Server status -->
+    <div class="win"><div class="tb"><span>Server Status</span><button id="btn-refresh">Refresh</button></div>
+      <div class="body"><div class="grid" id="status-grid"></div>
+        <div class="row" style="margin-top:10px">
+          <button id="btn-maint-on" class="danger">Enable Maintenance</button>
+          <button id="btn-maint-off">Disable Maintenance</button>
+          <button id="btn-reset-week" class="danger">Process Weekly Rewards</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Players -->
+    <div class="win"><div class="tb"><span>Players</span></div>
+      <div class="body">
+        <div class="row"><input id="q" placeholder="search wallet or name" size="30" /><button id="btn-search">Search</button></div>
+        <table><thead><tr><th>Name</th><th>Wallets</th><th>Status</th><th>Actions</th></tr></thead><tbody id="players"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Announce + Events -->
+    <div class="win"><div class="tb"><span>Announcements &amp; Live Events</span></div>
+      <div class="body">
+        <div class="row"><input id="an-title" placeholder="title" size="20" /><input id="an-body" placeholder="message" size="34" /><button id="btn-announce">Send Global</button></div>
+        <div class="row"><select id="ev-type"><option value="double_xp">Double XP</option><option value="double_coins">Double Coins</option><option value="boss_rush">Boss Rush</option><option value="special_map">Special Map</option><option value="holiday">Holiday</option></select>
+          <input id="ev-name" placeholder="event name" size="18" /><button id="btn-ev-add">Create/Enable Event</button></div>
+        <table><thead><tr><th>Name</th><th>Type</th><th>Enabled</th><th></th></tr></thead><tbody id="events"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Logs -->
+    <div class="win"><div class="tb"><span>Logs</span><span><button id="btn-errors">Errors</button> <button id="btn-viol">Violations</button> <button id="btn-rewlog">Rewards</button></span></div>
+      <div class="body"><div id="log"></div></div>
+    </div>
+  </div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let TOKEN = null, BASE = () => $('api').value.replace(/\/$/, '');
+
+async function api(path, opts = {}) {
+  const r = await fetch(BASE() + path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}), ...(opts.headers || {}) },
+  });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || r.status); }
+  return r.json();
+}
+
+// ---- sign in ----
+$('btn-connect').onclick = async () => {
+  try {
+    if (!window.ethereum) return alert('No wallet detected.');
+    const [addr] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const a = addr.toLowerCase();
+    const { message } = await api('/api/auth/nonce?address=' + a);
+    const sig = await window.ethereum.request({ method: 'personal_sign', params: [message, addr] });
+    const res = await api('/api/auth/verify', { method: 'POST', body: JSON.stringify({ address: a, signature: sig }) });
+    if (!res.player.admin) return alert('This wallet is not an admin.');
+    TOKEN = res.token; onSignedIn(a);
+  } catch (e) { alert('Sign-in failed: ' + e.message); }
+};
+$('btn-token').onclick = () => { TOKEN = $('token').value.trim(); if (TOKEN) onSignedIn('token'); };
+
+function onSignedIn(who) { $('who').textContent = who; $('app').classList.remove('hidden'); refresh(); loadPlayers(); loadEvents(); }
+
+// ---- status ----
+async function refresh() {
+  try {
+    const s = await api('/api/admin/status'); const m = s.metrics;
+    $('status-grid').innerHTML = [
+      ['Online', s.online], ['Uptime (s)', s.uptimeSec], ['Memory MB', s.memoryMB],
+      ['Maintenance', s.maintenance ? 'ON' : 'off'], ['DAU', m.dailyActive], ['WAU', m.weeklyActive],
+      ['Avg Session s', m.avgSessionSec], ['Boss Kills', m.bossKills], ['Retained/wk', m.retainedWeekly],
+    ].map(([k, v]) => `<div class="card">${k}<b>${v}</b></div>`).join('');
+  } catch (e) { alert(e.message); }
+}
+$('btn-refresh').onclick = refresh;
+$('btn-maint-on').onclick = () => api('/api/admin/maintenance', { method: 'POST', body: JSON.stringify({ enabled: true }) }).then(refresh);
+$('btn-maint-off').onclick = () => api('/api/admin/maintenance', { method: 'POST', body: JSON.stringify({ enabled: false }) }).then(refresh);
+$('btn-reset-week').onclick = () => api('/api/admin/process-rewards', { method: 'POST', body: JSON.stringify({ force: true }) }).then(r => alert('Granted: ' + (r.result.granted?.length || 0)));
+
+// ---- players ----
+async function loadPlayers() {
+  const { players } = await api('/api/admin/players?q=' + encodeURIComponent($('q').value || ''));
+  $('players').innerHTML = players.map(p => `<tr>
+    <td>${p.name || '—'}${p.is_admin ? ' <span class="pill">admin</span>' : ''}</td>
+    <td class="muted">${(p.wallets || '').replace(/,/g, '<br>')}</td>
+    <td>${p.banned ? '<span class="danger">BANNED</span>' : 'ok'}</td>
+    <td>
+      ${p.banned ? `<button onclick="unban('${p.id}')">Unban</button>` : `<button onclick="banP('${p.id}')">Ban 7d</button>`}
+      <button onclick="grantW('${p.id}')">+Weapon</button>
+    </td></tr>`).join('') || '<tr><td colspan=4 class="muted">No players.</td></tr>';
+}
+$('btn-search').onclick = loadPlayers;
+window.banP = (id) => api('/api/admin/ban', { method: 'POST', body: JSON.stringify({ playerId: id, days: 7, reason: 'Admin' }) }).then(loadPlayers);
+window.unban = (id) => api('/api/admin/unban', { method: 'POST', body: JSON.stringify({ playerId: id }) }).then(loadPlayers);
+window.grantW = (id) => { const w = prompt('Weapon id (e.g. ice_crystal):'); if (w) api('/api/admin/grant-weapon', { method: 'POST', body: JSON.stringify({ playerId: id, weaponId: w }) }).then(() => alert('granted')); };
+
+// ---- announce / events ----
+$('btn-announce').onclick = () => api('/api/admin/announce', { method: 'POST', body: JSON.stringify({ title: $('an-title').value, body: $('an-body').value }) }).then(() => alert('sent'));
+async function loadEvents() {
+  const { events } = await api('/api/admin/events');
+  $('events').innerHTML = events.map(e => `<tr><td>${e.name}</td><td>${e.type}</td><td>${e.enabled ? 'yes' : 'no'}</td>
+    <td><button onclick="toggleEv(${e.id},${!e.enabled})">${e.enabled ? 'Disable' : 'Enable'}</button></td></tr>`).join('') || '<tr><td colspan=4 class="muted">No events.</td></tr>';
+}
+window.toggleEv = (id, en) => api('/api/admin/events/toggle', { method: 'POST', body: JSON.stringify({ id, enabled: en }) }).then(loadEvents);
+$('btn-ev-add').onclick = () => api('/api/admin/events', { method: 'PUT', body: JSON.stringify({ event: { name: $('ev-name').value || 'Event', type: $('ev-type').value, enabled: true, config: {} } }) }).then(loadEvents);
+
+// ---- logs ----
+const showLog = (rows) => { $('log').textContent = JSON.stringify(rows, null, 2); };
+$('btn-errors').onclick = () => api('/api/admin/errors').then(r => showLog(r.errors));
+$('btn-viol').onclick = () => api('/api/admin/violations').then(r => showLog(r.violations));
+$('btn-rewlog').onclick = () => api('/api/admin/rewards-log').then(r => showLog(r.rewards));
+</script>
+</body>
+</html>
