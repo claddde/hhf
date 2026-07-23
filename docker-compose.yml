@@ -1,0 +1,67 @@
+# Full production stack: backend + PostgreSQL + nginx (SSL) + monitoring.
+# Copy server/.env.example -> server/.env and fill it in first.
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hoodlust
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: hoodlust
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hoodlust"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./server
+    restart: unless-stopped
+    env_file: ./server/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    # Run migrations then start the server.
+    command: sh -c "npm run migrate && node src/index.js"
+    expose:
+      - "8080"
+    volumes:
+      - backups:/app/backups
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/certs:/etc/nginx/certs:ro
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    expose: ["9090"]
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    depends_on: [prometheus]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana:/var/lib/grafana
+
+volumes:
+  pgdata:
+  backups:
+  grafana:

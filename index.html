@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>HoodLust Survivor</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Phaser 3 (CDN). No build step required — GitHub Pages ready. -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+</head>
+<body>
+  <!-- Phaser injects its <canvas> here -->
+  <div id="game-root"></div>
+
+  <!-- ============ WINDOWS 95 UI LAYER (DOM overlay) ============ -->
+  <div id="desktop">
+    <div class="desktop-glow"></div>
+
+    <!-- ---- MAIN MENU WINDOW ---- -->
+    <div class="win95-window" id="menu-window">
+      <div class="title-bar">
+        <span class="title-bar-text">
+          <span class="title-ico">&#9829;</span> HoodLust Survivor
+        </span>
+        <div class="title-bar-controls">
+          <button class="tb-btn" aria-label="Minimize">_</button>
+          <button class="tb-btn" aria-label="Maximize">&#9633;</button>
+          <button class="tb-btn" aria-label="Close" data-action="exit">&#10005;</button>
+        </div>
+      </div>
+      <div class="window-body menu-body">
+        <div class="menu-brand">
+          <div class="brand-title">HOODLUST</div>
+          <div class="brand-sub">SURVIVOR</div>
+          <div class="brand-meta">HoodLust Collection &middot; 1000 NFTs</div>
+        </div>
+        <div class="menu-buttons">
+          <button class="w95-btn menu-btn" data-action="play"><span class="key">P</span>lay</button>
+          <button class="w95-btn menu-btn" data-open="profile">Profile</button>
+          <button class="w95-btn menu-btn" data-open="season">Season</button>
+          <button class="w95-btn menu-btn" data-open="battlepass">Battle Pass</button>
+          <button class="w95-btn menu-btn" data-open="missions">Missions</button>
+          <button class="w95-btn menu-btn" data-open="leaderboard">Leaderboard</button>
+          <button class="w95-btn menu-btn" data-action="settings"><span class="key">S</span>ettings</button>
+          <button class="w95-btn menu-btn" data-open="shop">Shop</button>
+          <button class="w95-btn menu-btn" data-open="cosmetics">Cosmetics</button>
+          <button class="w95-btn menu-btn" data-open="accessibility">Accessibility</button>
+          <button class="w95-btn menu-btn" data-action="credits"><span class="key">C</span>redits</button>
+          <button class="w95-btn menu-btn" data-action="exit"><span class="key">E</span>xit</button>
+        </div>
+        <div class="menu-wallet" id="menu-wallet">&#128273; Wallet: <b id="menu-wallet-addr">Not connected</b></div>
+        <div class="menu-coins">&#9679; Coins: <b id="menu-coins">0</b></div>
+        <div class="menu-status" id="menu-status">Loading engine&hellip;</div>
+      </div>
+    </div>
+
+    <!-- ---- SETTINGS WINDOW ---- -->
+    <div class="win95-window hidden" id="settings-window">
+      <div class="title-bar">
+        <span class="title-bar-text">Settings</span>
+        <div class="title-bar-controls">
+          <button class="tb-btn" aria-label="Close" data-action="close-settings">&#10005;</button>
+        </div>
+      </div>
+      <div class="window-body">
+        <fieldset class="w95-field">
+          <legend>Audio</legend>
+          <label class="row">
+            <span>Music Volume</span>
+            <input type="range" id="music-vol" min="0" max="100" value="70" />
+            <output id="music-vol-out">70</output>
+          </label>
+          <label class="row">
+            <span>Sound Volume</span>
+            <input type="range" id="sound-vol" min="0" max="100" value="80" />
+            <output id="sound-vol-out">80</output>
+          </label>
+        </fieldset>
+        <fieldset class="w95-field">
+          <legend>Display</legend>
+          <label class="row checkrow">
+            <input type="checkbox" id="fullscreen-toggle" />
+            <span>Fullscreen</span>
+          </label>
+        </fieldset>
+        <fieldset class="w95-field">
+          <legend>Language</legend>
+          <label class="row">
+            <span>Language</span>
+            <select id="lang-select">
+              <option value="en">English</option>
+              <option value="bn">বাংলা (placeholder)</option>
+              <option value="es">Español (placeholder)</option>
+              <option value="ja">日本語 (placeholder)</option>
+            </select>
+          </label>
+        </fieldset>
+        <div class="dialog-actions">
+          <button class="w95-btn" data-action="close-settings">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- CREDITS WINDOW ---- -->
+    <div class="win95-window hidden" id="credits-window">
+      <div class="title-bar">
+        <span class="title-bar-text">Credits</span>
+        <div class="title-bar-controls">
+          <button class="tb-btn" aria-label="Close" data-action="close-credits">&#10005;</button>
+        </div>
+      </div>
+      <div class="window-body">
+        <div class="credits-body">
+          <p><b>HoodLust Survivor</b></p>
+          <p>A cute-gothic pixel survival game.</p>
+          <p>Collection: <b>HoodLust</b> &middot; Supply: <b>1000</b></p>
+          <hr />
+          <p>Engine: Phaser 3 &middot; HTML5</p>
+          <p>Phase 1: Core Engine</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="w95-btn" data-action="close-credits">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- TASKBAR ---- -->
+    <div id="taskbar">
+      <button class="start-btn" data-action="menu"><span class="start-logo">&#9829;</span> Start</button>
+      <div class="tray"><span id="clock">--:--</span></div>
+    </div>
+  </div>
+
+  <!-- ---- SHUTDOWN / EXIT SCREEN ---- -->
+  <div id="shutdown" class="hidden">
+    <div class="shutdown-text">It&rsquo;s now safe to turn off<br/>your HoodLust Survivor.</div>
+    <button class="w95-btn" data-action="reboot">Return to Menu</button>
+  </div>
+
+  <!-- ---- IN-GAME TOUCH CONTROLS (mobile) ---- -->
+  <div id="touch-controls" class="hidden">
+    <div id="joystick-base"><div id="joystick-thumb"></div></div>
+    <button id="run-btn">RUN</button>
+    <button id="pause-btn" title="Menu">&#9776;</button>
+  </div>
+
+  <!-- ============ HUD (Phase 2) ============ -->
+  <div id="hud" class="hidden">
+    <div class="hud-panel" id="hud-left">
+      <div class="hud-row">
+        <span class="hud-lbl">HP</span>
+        <div class="bar"><div id="hp-fill" class="fill hp-fill"></div><span id="hp-txt" class="bar-txt">100/100</span></div>
+      </div>
+      <div class="hud-row">
+        <span class="hud-lbl">LV<b id="hud-lvl">1</b></span>
+        <div class="bar"><div id="xp-fill" class="fill xp-fill"></div><span id="xp-txt" class="bar-txt">0 / 5</span></div>
+      </div>
+    </div>
+    <div class="hud-panel" id="hud-right">
+      <div class="hud-stat"><span class="hud-lbl">KILLS</span><b id="hud-kills">0</b></div>
+      <div class="hud-stat"><span class="hud-lbl">TIME</span><b id="hud-time">0:00</b></div>
+      <div class="hud-stat"><span class="hud-lbl">COINS</span><b id="hud-coins">0</b></div>
+    </div>
+    <button id="inv-btn" title="Inventory (I)">&#9776; INV</button>
+    <!-- Boss health bar -->
+    <div id="boss-bar" class="hidden">
+      <div class="boss-name" id="boss-name">BOSS</div>
+      <div class="boss-track"><div id="boss-fill"></div></div>
+    </div>
+    <!-- Active buffs -->
+    <div id="buff-tray"></div>
+  </div>
+
+  <!-- ============ PHASE 2 GAME DIALOGS ============ -->
+  <div id="modal-backdrop" class="hidden"></div>
+
+  <!-- Level Up -->
+  <div class="win95-window game-dialog hidden" id="levelup-dialog">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#9733;</span> Level Up!</span>
+    </div>
+    <div class="window-body">
+      <p class="dialog-lead">You reached <b id="levelup-lvl">Level 2</b> &mdash; choose an upgrade:</p>
+      <div id="upgrade-choices" class="upgrade-choices"></div>
+    </div>
+  </div>
+
+  <!-- Pause -->
+  <div class="win95-window game-dialog hidden" id="pause-dialog">
+    <div class="title-bar">
+      <span class="title-bar-text">Paused</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-pause="resume">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="menu-buttons">
+        <button class="w95-btn" data-pause="resume">Resume</button>
+        <button class="w95-btn" data-pause="settings">Settings</button>
+        <button class="w95-btn" data-pause="quit">Quit to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over -->
+  <div class="win95-window game-dialog hidden" id="gameover-dialog">
+    <div class="title-bar">
+      <span class="title-bar-text">Game Over</span>
+    </div>
+    <div class="window-body">
+      <div class="gameover-art">&#9760;</div>
+      <p class="dialog-lead">The HoodLust night claimed you&hellip;</p>
+      <div class="gameover-stats">
+        <div><span>Score</span><b id="go-score">0</b></div>
+        <div><span>Time Survived</span><b id="go-time">0:00</b></div>
+        <div><span>Enemies Slain</span><b id="go-kills">0</b></div>
+        <div><span>Level Reached</span><b id="go-level">1</b></div>
+      </div>
+      <div class="dialog-actions">
+        <button class="w95-btn" data-over="retry">Retry</button>
+        <button class="w95-btn" data-over="menu">Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WINDOWS 95 PHASE 3 WINDOWS ============ -->
+
+  <!-- Inventory -->
+  <div class="win95-window game-dialog hidden" id="inventory-window">
+    <div class="title-bar">
+      <span class="title-bar-text">Inventory</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-inv="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="inv-section-title">Weapons</div>
+      <div id="inv-weapons" class="inv-grid"></div>
+      <div class="inv-section-title">Passives</div>
+      <div id="inv-passives" class="inv-grid"></div>
+      <div class="inv-section-title">Stats</div>
+      <div id="inv-stats" class="inv-stats"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-inv="close">Close</button></div>
+    </div>
+  </div>
+
+  <!-- Shop -->
+  <div class="win95-window game-dialog hidden" id="shop-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#9670;</span> HoodLust Shop</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-shop="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="shop-wallet">Coins: <b id="shop-coins">0</b></div>
+      <div id="shop-items" class="shop-items"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-shop="close">Close</button></div>
+    </div>
+  </div>
+
+  <!-- Chest Reward -->
+  <div class="win95-window game-dialog hidden" id="chest-window">
+    <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#9670;</span> Treasure Chest</span></div>
+    <div class="window-body">
+      <div class="chest-art" id="chest-art">&#128142;</div>
+      <div class="chest-title" id="chest-title">Reward!</div>
+      <div class="chest-lines" id="chest-lines"></div>
+      <div class="dialog-actions"><button class="w95-btn" id="chest-claim">Claim</button></div>
+    </div>
+  </div>
+
+  <!-- Boss Warning (toast dialog) -->
+  <div class="win95-window boss-warning hidden" id="boss-warning">
+    <div class="title-bar"><span class="title-bar-text">&#9888; WARNING</span></div>
+    <div class="window-body">
+      <div class="bw-skull">&#9760;</div>
+      <div class="bw-text">A boss approaches&hellip;<br/><b id="bw-name">The Shadow Lord</b></div>
+    </div>
+  </div>
+
+  <!-- Achievement toast -->
+  <div id="achievement-toast" class="hidden">
+    <div class="ach-ico" id="ach-ico">&#11088;</div>
+    <div class="ach-body">
+      <div class="ach-lbl">Achievement Unlocked</div>
+      <div class="ach-name" id="ach-name">First Blood</div>
+    </div>
+  </div>
+
+  <!-- ============ CHARACTER + MAP SELECTION (Phase 4) ============ -->
+  <div class="win95-window game-dialog hidden" id="select-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#9829;</span> New Game</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-select="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="sel-section-title">Choose Character</div>
+      <div id="sel-characters" class="sel-grid"></div>
+      <div class="sel-section-title">Choose World</div>
+      <div id="sel-maps" class="sel-grid"></div>
+      <div class="dialog-actions">
+        <button class="w95-btn" data-select="close">Cancel</button>
+        <button class="w95-btn" id="sel-start">Start &#9654;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 5 — WEB3 / ONLINE WINDOWS ============ -->
+
+  <!-- Wallet gate / verification -->
+  <div class="win95-window game-dialog hidden" id="wallet-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#128273;</span> Holder Verification</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-wallet="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="wallet-body">
+        <div class="wallet-crest">&#9878;</div>
+        <p class="dialog-lead"><b>HoodLust Survivor</b> is exclusive to verified
+          <b>HoodLust NFT</b> holders.</p>
+        <ol class="wallet-steps">
+          <li id="ws-connect">Connect wallet</li>
+          <li id="ws-network">Verify network</li>
+          <li id="ws-nft">Verify NFT ownership</li>
+          <li id="ws-enter">Enter game</li>
+        </ol>
+        <div class="wallet-status" id="wallet-status">Ready to verify.</div>
+      </div>
+      <div class="dialog-actions">
+        <button class="w95-btn" id="wallet-connect">Connect Wallet</button>
+        <button class="w95-btn hidden" id="wallet-switch">Switch Wallet</button>
+        <button class="w95-btn hidden" id="wallet-demo">Enter Demo</button>
+        <button class="w95-btn hidden" id="wallet-play">Enter Game &#9654;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player profile -->
+  <div class="win95-window game-dialog hidden" id="profile-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#9829;</span> Player Profile</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-profile="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div id="profile-body" class="profile-body"></div>
+      <div class="dialog-actions">
+        <button class="w95-btn" id="profile-switch">Switch Wallet</button>
+        <button class="w95-btn" data-profile="close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="win95-window game-dialog hidden" id="leaderboard-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#127942;</span> Leaderboard</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-lb="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="lb-tabs">
+        <button class="w95-btn lb-tab selected" data-scope="week">Weekly</button>
+        <button class="w95-btn lb-tab" data-scope="month">Monthly</button>
+        <button class="w95-btn lb-tab" data-scope="all">All-Time</button>
+      </div>
+      <div class="lb-reset">Weekly reset in <b id="lb-countdown">—</b></div>
+      <div class="lb-head"><span>#</span><span>Wallet</span><span>Char</span><span>Score</span></div>
+      <div id="lb-rows" class="lb-rows"></div>
+      <div class="dialog-actions">
+        <button class="w95-btn" id="lb-admin-btn">Admin</button>
+        <button class="w95-btn" data-lb="close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reward admin module -->
+  <div class="win95-window game-dialog hidden" id="admin-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#9881;</span> Reward Admin</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-admin="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <p class="dialog-lead">Weekly reward rules (rank &rarr; reward). Changes take effect immediately &mdash; no code edits.</p>
+      <div id="admin-rules" class="admin-rules"></div>
+      <button class="w95-btn" id="admin-add" style="margin-top:8px;">+ Add Rule</button>
+      <div class="dialog-actions">
+        <button class="w95-btn" id="admin-save">Save Rules</button>
+        <button class="w95-btn" data-admin="close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 7 — LIVE ECOSYSTEM WINDOWS ============ -->
+
+  <div class="win95-window game-dialog hidden" id="season-window">
+    <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#127775;</span> Season Hub</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-eco-close="season-window">&#10005;</button></div></div>
+    <div class="window-body"><div id="season-body" class="eco-body"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-eco-close="season-window">Close</button></div></div>
+  </div>
+
+  <div class="win95-window game-dialog hidden" id="battlepass-window">
+    <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#9733;</span> Battle Pass</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-eco-close="battlepass-window">&#10005;</button></div></div>
+    <div class="window-body"><div id="bp-head" class="eco-body"></div>
+      <div class="bp-legend"><span>Tier</span><span>Free</span><span>Premium</span></div>
+      <div id="bp-rows" class="bp-rows"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-eco-close="battlepass-window">Close</button></div></div>
+  </div>
+
+  <div class="win95-window game-dialog hidden" id="missions-window">
+    <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#128203;</span> Missions</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-eco-close="missions-window">&#10005;</button></div></div>
+    <div class="window-body eco-body">
+      <div class="eco-section">Daily &mdash; refreshes every day</div><div id="mis-daily" class="mis-list"></div>
+      <div class="eco-section">Weekly &mdash; big objectives</div><div id="mis-weekly" class="mis-list"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-eco-close="missions-window">Close</button></div></div>
+  </div>
+
+  <div class="win95-window game-dialog hidden" id="cosmetics-window">
+    <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#128087;</span> Cosmetics Locker</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-eco-close="cosmetics-window">&#10005;</button></div></div>
+    <div class="window-body eco-body">
+      <div class="eco-section">Equipped</div><div id="cos-equipped" class="cos-equipped"></div>
+      <div class="eco-section">Owned (cosmetic only &mdash; never pay-to-win)</div><div id="cos-grid" class="cos-grid"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-eco-close="cosmetics-window">Close</button></div></div>
+  </div>
+
+  <div class="win95-window game-dialog hidden" id="accessibility-window">
+    <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#9855;</span> Accessibility &amp; Streamer</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-eco-close="accessibility-window">&#10005;</button></div></div>
+    <div class="window-body eco-body"><div id="a11y-body"></div>
+      <div class="dialog-actions"><button class="w95-btn" data-eco-close="accessibility-window">Close</button></div></div>
+  </div>
+
+  <!-- ============ GAME MODULES ============ -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
