@@ -38,6 +38,7 @@
           <button class="w95-btn menu-btn" data-action="play"><span class="key">P</span>lay</button>
           <button class="w95-btn menu-btn" data-open="profile">Profile</button>
           <button class="w95-btn menu-btn" data-open="season">Season</button>
+          <button class="w95-btn menu-btn" data-open="worldmap">World Map</button>
           <button class="w95-btn menu-btn" data-open="battlepass">Battle Pass</button>
           <button class="w95-btn menu-btn" data-open="missions">Missions</button>
           <button class="w95-btn menu-btn" data-open="leaderboard">Leaderboard</button>
@@ -45,12 +46,12 @@
           <button class="w95-btn menu-btn" data-open="shop">Shop</button>
           <button class="w95-btn menu-btn" data-open="cosmetics">Cosmetics</button>
           <button class="w95-btn menu-btn" data-open="accessibility">Accessibility</button>
-          <button class="w95-btn menu-btn" data-action="credits"><span class="key">C</span>redits</button>
           <button class="w95-btn menu-btn" data-action="exit"><span class="key">E</span>xit</button>
         </div>
-        <div class="menu-wallet" id="menu-wallet">&#128273; Wallet: <b id="menu-wallet-addr">Not connected</b></div>
+        <div class="menu-wallet locked" id="menu-wallet" title="Coming Soon">&#128273; Wallet: <b id="menu-wallet-addr">Coming Soon</b></div>
         <div class="menu-coins">&#9679; Coins: <b id="menu-coins">0</b></div>
         <div class="menu-status" id="menu-status">Loading engine&hellip;</div>
+        <div class="demo-badge">DEMO VERSION &middot; early public build</div>
       </div>
     </div>
 
@@ -157,6 +158,9 @@
       </div>
     </div>
     <div class="hud-panel" id="hud-right">
+      <div class="hud-stat"><span class="hud-lbl">REGION</span><b id="hud-region">—</b></div>
+      <div class="hud-stat"><span class="hud-lbl">DANGER</span><b id="hud-danger">Calm</b></div>
+      <div class="hud-stat"><span class="hud-lbl">WORLD LV</span><b id="hud-worldlvl">1</b></div>
       <div class="hud-stat"><span class="hud-lbl">KILLS</span><b id="hud-kills">0</b></div>
       <div class="hud-stat"><span class="hud-lbl">TIME</span><b id="hud-time">0:00</b></div>
       <div class="hud-stat"><span class="hud-lbl">COINS</span><b id="hud-coins">0</b></div>
@@ -282,6 +286,29 @@
     </div>
   </div>
 
+  <!-- ============ PHASE 7.5 — CONNECTED WORLD MAP ============ -->
+  <div class="win95-window game-dialog hidden" id="worldmap-window">
+    <div class="title-bar">
+      <span class="title-bar-text"><span class="title-ico">&#128506;</span> World Map — HoodLust Universe</span>
+      <div class="title-bar-controls"><button class="tb-btn" data-worldmap="close">&#10005;</button></div>
+    </div>
+    <div class="window-body">
+      <div class="wm-topbar">
+        <span>World Level <b id="wm-worldlevel">1</b></span>
+        <span>Discovered <b id="wm-progress">1/5</b></span>
+      </div>
+      <div id="wm-canvas" class="wm-canvas">
+        <svg id="wm-links" class="wm-links"></svg>
+        <div id="wm-nodes"></div>
+      </div>
+      <div id="wm-detail" class="wm-detail">Select a region.</div>
+      <div class="dialog-actions">
+        <button class="w95-btn" data-worldmap="close">Close</button>
+        <button class="w95-btn" id="wm-travel" disabled>Fast Travel &#9654;</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ CHARACTER + MAP SELECTION (Phase 4) ============ -->
   <div class="win95-window game-dialog hidden" id="select-window">
     <div class="title-bar">
@@ -311,20 +338,20 @@
     <div class="window-body">
       <div class="wallet-body">
         <div class="wallet-crest">&#9878;</div>
-        <p class="dialog-lead"><b>HoodLust Survivor</b> is exclusive to verified
-          <b>HoodLust NFT</b> holders.</p>
+        <p class="dialog-lead"><b>HoodLust Survivor</b> — public demo. Play the core
+          game now; <b>Wallet Connect &amp; NFT Verification</b> arrive in a future update.</p>
         <ol class="wallet-steps">
-          <li id="ws-connect">Connect wallet</li>
-          <li id="ws-network">Verify network</li>
-          <li id="ws-nft">Verify NFT ownership</li>
+          <li id="ws-connect">Connect wallet <span class="soon-tag">Coming Soon</span></li>
+          <li id="ws-network">Verify network <span class="soon-tag">Coming Soon</span></li>
+          <li id="ws-nft">Verify NFT ownership <span class="soon-tag">Coming Soon</span></li>
           <li id="ws-enter">Enter game</li>
         </ol>
-        <div class="wallet-status" id="wallet-status">Ready to verify.</div>
+        <div class="wallet-status" id="wallet-status">Wallet integration will be available in a future update.</div>
       </div>
       <div class="dialog-actions">
-        <button class="w95-btn" id="wallet-connect">Connect Wallet</button>
+        <button class="w95-btn locked" id="wallet-connect" title="Coming Soon">Connect Wallet &#128274;</button>
         <button class="w95-btn hidden" id="wallet-switch">Switch Wallet</button>
-        <button class="w95-btn hidden" id="wallet-demo">Enter Demo</button>
+        <button class="w95-btn" id="wallet-demo">Play Demo &#9654;</button>
         <button class="w95-btn hidden" id="wallet-play">Enter Game &#9654;</button>
       </div>
     </div>
@@ -345,41 +372,27 @@
     </div>
   </div>
 
-  <!-- Leaderboard -->
+  <!-- Seasonal Leaderboard -->
   <div class="win95-window game-dialog hidden" id="leaderboard-window">
     <div class="title-bar">
-      <span class="title-bar-text"><span class="title-ico">&#127942;</span> Leaderboard</span>
+      <span class="title-bar-text"><span class="title-ico">&#127942;</span> Seasonal Leaderboard</span>
       <div class="title-bar-controls"><button class="tb-btn" data-lb="close">&#10005;</button></div>
     </div>
-    <div class="window-body">
-      <div class="lb-tabs">
-        <button class="w95-btn lb-tab selected" data-scope="week">Weekly</button>
-        <button class="w95-btn lb-tab" data-scope="month">Monthly</button>
-        <button class="w95-btn lb-tab" data-scope="all">All-Time</button>
+    <div class="window-body lb-body">
+      <div class="lb-season-head">
+        <div class="lb-season-badge">SEASON 1</div>
+        <div class="lb-season-info">
+          <div class="lb-season-name" id="lb-season-name">Neon Gothic</div>
+          <div class="lb-season-timer">Ends in <b id="lb-countdown">—</b></div>
+        </div>
       </div>
-      <div class="lb-reset">Weekly reset in <b id="lb-countdown">—</b></div>
-      <div class="lb-head"><span>#</span><span>Wallet</span><span>Char</span><span>Score</span></div>
+      <div class="lb-me" id="lb-me"></div>
+      <div class="lb-head"><span>#</span><span>Player</span><span>XP</span><span>Wins</span></div>
       <div id="lb-rows" class="lb-rows"></div>
+      <div class="lb-rewards" id="lb-rewards"></div>
+      <div class="lb-info" id="lb-info"></div>
       <div class="dialog-actions">
-        <button class="w95-btn" id="lb-admin-btn">Admin</button>
         <button class="w95-btn" data-lb="close">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Reward admin module -->
-  <div class="win95-window game-dialog hidden" id="admin-window">
-    <div class="title-bar">
-      <span class="title-bar-text"><span class="title-ico">&#9881;</span> Reward Admin</span>
-      <div class="title-bar-controls"><button class="tb-btn" data-admin="close">&#10005;</button></div>
-    </div>
-    <div class="window-body">
-      <p class="dialog-lead">Weekly reward rules (rank &rarr; reward). Changes take effect immediately &mdash; no code edits.</p>
-      <div id="admin-rules" class="admin-rules"></div>
-      <button class="w95-btn" id="admin-add" style="margin-top:8px;">+ Add Rule</button>
-      <div class="dialog-actions">
-        <button class="w95-btn" id="admin-save">Save Rules</button>
-        <button class="w95-btn" data-admin="close">Close</button>
       </div>
     </div>
   </div>
@@ -396,10 +409,17 @@
   <div class="win95-window game-dialog hidden" id="battlepass-window">
     <div class="title-bar"><span class="title-bar-text"><span class="title-ico">&#9733;</span> Battle Pass</span>
       <div class="title-bar-controls"><button class="tb-btn" data-eco-close="battlepass-window">&#10005;</button></div></div>
-    <div class="window-body"><div id="bp-head" class="eco-body"></div>
-      <div class="bp-legend"><span>Tier</span><span>Free</span><span>Premium</span></div>
-      <div id="bp-rows" class="bp-rows"></div>
-      <div class="dialog-actions"><button class="w95-btn" data-eco-close="battlepass-window">Close</button></div></div>
+    <div class="window-body bp-body">
+      <div id="bp-head" class="bp-head"></div>
+      <div id="bp-access" class="bp-access"></div>
+      <div class="bp-track-wrap">
+        <button class="bp-nav bp-nav-l" id="bp-prev" aria-label="Scroll left">&#10094;</button>
+        <div id="bp-track" class="bp-track"></div>
+        <button class="bp-nav bp-nav-r" id="bp-next" aria-label="Scroll right">&#10095;</button>
+      </div>
+      <div class="bp-foot-note">Final rewards will be revealed before launch &middot; Rewards are currently under development.</div>
+      <div class="dialog-actions"><button class="w95-btn" data-eco-close="battlepass-window">Close</button></div>
+    </div>
   </div>
 
   <div class="win95-window game-dialog hidden" id="missions-window">
