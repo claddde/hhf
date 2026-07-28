@@ -1,0 +1,650 @@
+/* ============================================================
+   HoodLust Survivor — Global + Windows 95 UI styling
+   Pixel-perfect, no blur, authentic 95 bevels.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ============================================================
+   PHASE 7.6 — FULL-SCREEN LOADING SCREEN */
+/* (removed — game boots directly to the menu; kept comment anchor) */
+/* placeholder-start */
+/* placeholder-end
+   ============================================================ */
+
+:root {
+  --w95-face:   #c0c0c0;
+  --w95-hi:     #ffffff;
+  --w95-lite:   #dfdfdf;
+  --w95-shadow: #808080;
+  --w95-dark:   #0a0a0a;
+  --w95-navy:   #000080;
+  --w95-navy2:  #1084d0;
+  --desk:       #0e3b3b; /* teal-ish gothic desktop */
+  --ui-scale:   1;       /* Phase 7 accessibility UI scaling */
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
+  font-size: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ---- Phaser canvas: pixel perfect, no smoothing ---- */
+#game-root { position: fixed; inset: 0; z-index: 0; }
+#game-root canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+.hidden { display: none !important; }
+
+/* ============================================================
+   DESKTOP (menu backdrop)
+   ============================================================ */
+#desktop {
+  position: fixed; inset: 0; z-index: 10;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #12514f 0%, var(--desk) 45%, #072424 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.desktop-glow {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.10) 0 2px, transparent 2px 4px);
+  pointer-events: none; mix-blend-mode: multiply;
+}
+
+/* ============================================================
+   WINDOWS 95 WINDOW CHROME
+   ============================================================ */
+.win95-window {
+  position: relative;
+  min-width: 300px;
+  background: var(--w95-face);
+  padding: 3px;
+  box-shadow:
+    inset -1px -1px var(--w95-dark),
+    inset  1px  1px var(--w95-hi),
+    inset -2px -2px var(--w95-shadow),
+    inset  2px  2px var(--w95-lite);
+  z-index: 20;
+}
+/* stacked secondary windows offset from centre */
+#settings-window, #credits-window {
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-46%, -52%);
+  z-index: 30;
+}
+
+.title-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(90deg, var(--w95-navy), var(--w95-navy2));
+  color: #fff; padding: 3px 3px 3px 6px;
+  font-weight: bold; letter-spacing: .2px;
+}
+.title-bar-text { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.title-ico { color: #ff8ab0; }
+.title-bar-controls { display: flex; gap: 2px; }
+.tb-btn {
+  width: 18px; height: 16px; line-height: 12px;
+  font-size: 10px; font-weight: bold;
+  background: var(--w95-face); color: #000;
+  border: none; cursor: pointer;
+  box-shadow:
+    inset -1px -1px var(--w95-dark),
+    inset  1px  1px var(--w95-hi),
+    inset -2px -2px var(--w95-shadow),
+    inset  2px  2px var(--w95-lite);
+}
+.tb-btn:active {
+  box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px var(--w95-hi);
+}
+
+.window-body { padding: 12px; }
+
+/* ============================================================
+   MENU
+   ============================================================ */
+#menu-window {
+  max-height: 100vh;
+  display: flex; flex-direction: column;
+}
+.menu-body { width: 300px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; min-height: 0; }
+.menu-brand { text-align: center; padding: 8px 0 4px; flex-shrink: 0; }
+.brand-title {
+  font-family: 'Press Start 2P', monospace; font-size: 26px; color: #202020;
+  text-shadow: 2px 2px 0 #ff8ab0, 4px 4px 0 rgba(0,0,0,.25);
+  letter-spacing: 1px;
+}
+.brand-sub {
+  font-family: 'Press Start 2P', monospace; font-size: 13px; color: #7d1330;
+  margin-top: 6px; letter-spacing: 4px;
+}
+.brand-meta { margin-top: 10px; font-size: 11px; color: #444; }
+
+.menu-buttons { display: flex; flex-direction: column; gap: 8px; }
+.menu-btn { text-align: left; padding-left: 16px; }
+.menu-status {
+  font-size: 10px; color: #333; text-align: center;
+  border-top: 1px solid var(--w95-shadow); padding-top: 8px; margin-top: 2px;
+}
+
+/* ---- 95 button ---- */
+.w95-btn {
+  font-family: inherit; font-size: 12px; color: #000;
+  background: var(--w95-face);
+  padding: 7px 12px; cursor: pointer; border: none;
+  box-shadow:
+    inset -1px -1px var(--w95-dark),
+    inset  1px  1px var(--w95-hi),
+    inset -2px -2px var(--w95-shadow),
+    inset  2px  2px var(--w95-lite);
+}
+.w95-btn:hover { filter: brightness(1.03); }
+.w95-btn:active {
+  box-shadow:
+    inset  1px  1px var(--w95-dark),
+    inset -1px -1px var(--w95-hi),
+    inset  2px  2px var(--w95-shadow),
+    inset -2px -2px var(--w95-lite);
+  padding: 8px 11px 6px 13px;
+}
+.w95-btn:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+.w95-btn .key { text-decoration: underline; }
+.w95-btn:disabled { color: var(--w95-shadow); text-shadow: 1px 1px var(--w95-hi); cursor: default; }
+
+/* ============================================================
+   SETTINGS / FORM CONTROLS
+   ============================================================ */
+.w95-field {
+  border: none; margin: 0 0 12px; padding: 12px 10px 10px;
+  box-shadow:
+    inset -1px -1px var(--w95-hi),
+    inset  1px  1px var(--w95-shadow);
+}
+.w95-field legend { font-size: 11px; padding: 0 4px; }
+.row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 12px; }
+.row > span:first-child { min-width: 96px; }
+.checkrow { gap: 6px; }
+.row output { min-width: 26px; text-align: right; font-variant-numeric: tabular-nums; }
+
+input[type=range] { flex: 1; height: 18px; accent-color: var(--w95-navy); }
+select {
+  font-family: inherit; font-size: 12px; padding: 2px 4px; background: #fff;
+  box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow), inset -2px -2px var(--w95-lite), inset 2px 2px var(--w95-dark);
+  border: none;
+}
+input[type=checkbox] { width: 16px; height: 16px; }
+
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.dialog-actions .w95-btn { min-width: 72px; text-align: center; }
+
+.credits-body { width: 280px; font-size: 12px; line-height: 1.6; }
+.credits-body p { margin: 4px 0; }
+.credits-body hr { border: none; height: 2px; box-shadow: inset 0 1px var(--w95-shadow), inset 0 -1px var(--w95-hi); margin: 8px 0; }
+
+/* ============================================================
+   TASKBAR
+   ============================================================ */
+#taskbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 32px;
+  background: var(--w95-face);
+  box-shadow: inset 0 1px var(--w95-hi), inset 0 2px var(--w95-lite);
+  display: flex; align-items: center; justify-content: space-between; padding: 3px 4px;
+}
+.start-btn {
+  font-family: inherit; font-weight: bold; font-size: 12px;
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 8px; cursor: pointer; border: none; background: var(--w95-face);
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+}
+.start-logo { color: #ff5a8a; }
+.tray {
+  font-size: 11px; padding: 4px 10px;
+  box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow);
+}
+
+/* ============================================================
+   SHUTDOWN SCREEN
+   ============================================================ */
+#shutdown {
+  position: fixed; inset: 0; z-index: 60;
+  background: #000; color: #f0a000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+  font-family: 'Press Start 2P', monospace; text-align: center;
+}
+.shutdown-text { font-size: 16px; line-height: 2; }
+
+/* ============================================================
+   TOUCH CONTROLS (mobile)
+   ============================================================ */
+#touch-controls { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+#joystick-base {
+  position: absolute; left: 28px; bottom: 40px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(20,30,25,0.35);
+  border: 2px solid rgba(159,232,192,0.4);
+  pointer-events: auto; touch-action: none;
+}
+#joystick-thumb {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(159,232,192,0.55);
+  border: 2px solid rgba(255,255,255,0.6);
+}
+#run-btn, #pause-btn {
+  position: absolute; pointer-events: auto; touch-action: none;
+  font-family: 'Press Start 2P', monospace; color: #142014;
+  background: rgba(159,232,192,0.7); border: 2px solid rgba(255,255,255,0.6);
+  cursor: pointer;
+}
+#run-btn { right: 34px; bottom: 56px; width: 84px; height: 84px; border-radius: 50%; font-size: 12px; }
+#run-btn.active { background: #f2d16b; }
+#pause-btn { right: 16px; top: 16px; width: 44px; height: 44px; border-radius: 6px; font-size: 18px; }
+
+/* Small screens: shrink windows */
+@media (max-width: 420px) {
+  .menu-body { width: 260px; }
+  .brand-title { font-size: 20px; }
+}
+/* Short viewports (mobile landscape, ~540px tall): compress the menu so the
+   title, all buttons and the wallet/Start row stay on-screen. */
+@media (max-height: 640px) {
+  .menu-body { gap: 8px; }
+  .menu-buttons { gap: 5px; }
+  .menu-btn { padding-top: 5px; padding-bottom: 5px; }
+  .menu-brand { padding: 2px 0; }
+  .brand-title { font-size: 20px; }
+}
+
+/* ============================================================
+   PHASE 2 — IN-GAME HUD  (Windows 95 flavoured)
+   ============================================================ */
+#hud { position: fixed; inset: 0; z-index: 35; pointer-events: none;
+  font-family: 'Press Start 2P', monospace; color: #eee; }
+.hud-panel {
+  position: absolute; top: 12px; padding: 8px 10px;
+  background: var(--w95-face);
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi),
+              inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+}
+#hud-left  { left: 12px; width: 260px; display: flex; flex-direction: column; gap: 7px; }
+#hud-right { right: 12px; display: flex; flex-direction: column; gap: 7px; text-align: right; }
+.hud-row { display: flex; align-items: center; gap: 7px; }
+.hud-lbl { font-size: 8px; color: #303030; letter-spacing: .5px; }
+.hud-lbl b { color: #7d1330; margin-left: 4px; font-size: 10px; }
+.hud-stat { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.hud-stat b { font-size: 12px; color: #202020; }
+
+.bar {
+  position: relative; flex: 1; height: 16px; background: #3a3a3a;
+  box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px var(--w95-shadow);
+  overflow: hidden;
+}
+.fill { position: absolute; inset: 2px auto 2px 2px; width: 100%; transition: width .12s linear; }
+.hp-fill { background: linear-gradient(#e0546f, #a01840); }
+.xp-fill { background: linear-gradient(#7fe0ff, #3a9fd0); }
+.bar-txt {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 8px; color: #fff; text-shadow: 1px 1px 0 #000; letter-spacing: .5px;
+}
+
+/* ============================================================
+   PHASE 2 — GAME DIALOGS (share Windows 95 window styling)
+   ============================================================ */
+#modal-backdrop { position: fixed; inset: 0; z-index: 45; background: rgba(0,0,20,0.45); }
+.game-dialog {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 50; min-width: 300px; max-width: 92vw;
+}
+.dialog-lead { font-size: 12px; margin: 2px 0 12px; line-height: 1.5; }
+.dialog-lead b { color: #7d1330; }
+
+.upgrade-choices { display: flex; flex-direction: column; gap: 8px; width: 340px; max-width: 84vw; }
+.upgrade-card {
+  display: flex; flex-direction: column; gap: 3px; text-align: left;
+  padding: 10px 12px; cursor: pointer; border: none; background: var(--w95-face);
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi),
+              inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+}
+.upgrade-card:hover { filter: brightness(1.04); }
+.upgrade-card:active { box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px var(--w95-hi); }
+.upgrade-card .u-name { font-weight: bold; font-size: 13px; color: #202020; }
+.upgrade-card .u-name .u-ico { color: #7d1330; margin-right: 6px; }
+.upgrade-card .u-desc { font-size: 11px; color: #444; }
+
+.gameover-art { font-size: 40px; text-align: center; margin: 4px 0 6px; }
+.gameover-stats { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 14px; }
+.gameover-stats div { display: flex; justify-content: space-between; font-size: 12px;
+  padding: 5px 8px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.gameover-stats b { color: #7d1330; }
+.game-dialog .dialog-actions .w95-btn { min-width: 96px; text-align: center; }
+
+/* ============================================================
+   PHASE 3 — menu coins, HUD extras, boss bar, buffs, windows
+   ============================================================ */
+.menu-coins { text-align: center; font-size: 11px; color: #333; }
+.menu-coins b { color: #a06a12; }
+
+#hud-coins { color: #f2c033 !important; }
+
+#inv-btn {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  pointer-events: auto; font-family: 'Press Start 2P', monospace; font-size: 9px;
+  padding: 7px 10px; cursor: pointer; border: none; color: #202020; background: var(--w95-face);
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+}
+
+/* Boss health bar (top-centre) */
+#boss-bar {
+  position: absolute; top: 54px; left: 50%; transform: translateX(-50%);
+  width: min(620px, 86vw); font-family: 'Press Start 2P', monospace;
+}
+.boss-name { text-align: center; color: #ff6a8a; font-size: 10px; text-shadow: 2px 2px 0 #000; margin-bottom: 4px; letter-spacing: 1px; }
+.boss-track {
+  height: 18px; background: #2a0a12;
+  box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px #803040;
+  border: 2px solid #000; overflow: hidden;
+}
+#boss-fill { height: 100%; width: 100%; background: linear-gradient(#ff5a8a, #a01840); transition: width .1s linear; }
+
+/* Buff tray */
+#buff-tray { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+.buff-chip {
+  font-family: 'Press Start 2P', monospace; font-size: 8px; color: #201830;
+  padding: 5px 8px; background: #d0b8ff;
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi);
+}
+
+/* Inventory */
+.inv-section-title { font-size: 10px; color: #7d1330; margin: 8px 0 5px; font-weight: bold; }
+.inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 340px; max-width: 84vw; }
+.inv-cell {
+  display: flex; align-items: center; gap: 7px; padding: 6px 8px; font-size: 11px;
+  box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow);
+}
+.inv-cell .inv-ico { font-size: 16px; }
+.inv-cell .inv-lv { margin-left: auto; font-size: 9px; color: #555; }
+.inv-empty { grid-column: 1 / -1; font-size: 11px; color: #777; padding: 6px; }
+.inv-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 14px; width: 340px; max-width: 84vw; font-size: 11px; margin-top: 4px; }
+.inv-stats div { display: flex; justify-content: space-between; }
+.inv-stats b { color: #7d1330; }
+
+/* Shop */
+.shop-wallet { font-size: 12px; margin-bottom: 10px; }
+.shop-wallet b { color: #a06a12; }
+.shop-items { display: flex; flex-direction: column; gap: 7px; width: 360px; max-width: 86vw; max-height: 46vh; overflow-y: auto; }
+.shop-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.shop-row .shop-ico { font-size: 18px; color: #7d1330; }
+.shop-row .shop-info { flex: 1; }
+.shop-row .shop-name { font-weight: bold; font-size: 12px; }
+.shop-row .shop-desc { font-size: 10px; color: #555; }
+.shop-row .shop-lv { font-size: 9px; color: #777; }
+.shop-row .w95-btn { min-width: 84px; text-align: center; font-size: 11px; }
+.shop-row.maxed { opacity: .6; }
+
+/* Chest reward */
+.chest-art { font-size: 46px; text-align: center; margin: 2px 0; }
+.chest-title { text-align: center; font-family: 'Press Start 2P', monospace; font-size: 13px; margin: 4px 0 10px; }
+.chest-lines { text-align: center; font-size: 13px; line-height: 1.7; margin-bottom: 12px; }
+.chest-lines .cl-main { font-weight: bold; font-size: 15px; }
+#chest-claim { min-width: 120px; text-align: center; }
+
+/* Boss warning toast */
+.boss-warning {
+  position: fixed; top: 22%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 55; min-width: 280px; animation: bw-pulse 1s ease-in-out infinite alternate;
+}
+.boss-warning .title-bar { background: linear-gradient(90deg, #800000, #d01838); }
+.bw-skull { font-size: 34px; text-align: center; color: #a01840; }
+.bw-text { text-align: center; font-size: 12px; line-height: 1.6; padding: 4px 0 2px; }
+.bw-text b { color: #7d1330; }
+@keyframes bw-pulse { from { filter: brightness(1); } to { filter: brightness(1.15); } }
+
+/* Achievement toast */
+#achievement-toast {
+  position: fixed; right: 16px; bottom: 60px; z-index: 58;
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  background: var(--w95-face);
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+  transition: transform .3s ease, opacity .3s ease;
+}
+#achievement-toast.hidden { display: flex !important; transform: translateX(140%); opacity: 0; pointer-events: none; }
+.ach-ico { font-size: 26px; color: #f2a83a; }
+.ach-lbl { font-size: 8px; font-family: 'Press Start 2P', monospace; color: #7d1330; margin-bottom: 4px; }
+.ach-name { font-size: 13px; font-weight: bold; }
+
+/* ============================================================
+   PHASE 4 — Character / Map selection window
+   ============================================================ */
+.sel-section-title { font-size: 10px; color: #7d1330; font-weight: bold; margin: 6px 0 6px; }
+.sel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 372px; max-width: 86vw; margin-bottom: 6px; }
+.sel-card {
+  display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 8px 5px; cursor: pointer;
+  background: var(--w95-face); border: none; text-align: center;
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+}
+.sel-card:hover { filter: brightness(1.05); }
+.sel-card.selected { box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px var(--w95-hi); background: #d8d0e8; }
+.sel-card.locked { opacity: .55; cursor: default; }
+.sel-thumb {
+  width: 44px; height: 44px; image-rendering: pixelated; display: flex; align-items: center; justify-content: center;
+  background: repeating-conic-gradient(#cfc7d8 0% 25%, #bfb6cc 0% 50%) 50% / 12px 12px;
+  box-shadow: inset 1px 1px var(--w95-shadow);
+}
+.sel-thumb img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.sel-swatch { width: 44px; height: 30px; box-shadow: inset 1px 1px rgba(0,0,0,.35); }
+.sel-name { font-size: 9px; font-weight: bold; line-height: 1.3; }
+.sel-desc { font-size: 8px; color: #555; line-height: 1.3; }
+#sel-start { min-width: 110px; text-align: center; }
+
+
+/* ============================================================
+   PHASE 7.5 — CONNECTED WORLD MAP
+   ============================================================ */
+.wm-topbar { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px; padding: 4px 6px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.wm-topbar b { color: #7d1330; }
+.wm-canvas { position: relative; width: 560px; max-width: 92vw; height: 320px; background:
+    repeating-linear-gradient(0deg, #14243a 0 23px, #172a42 23px 24px),
+    repeating-linear-gradient(90deg, #14243a 0 23px, #172a42 23px 24px);
+  box-shadow: inset -1px -1px var(--w95-hi), inset 2px 2px var(--w95-shadow); overflow: hidden; }
+.wm-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wm-node {
+  position: absolute; transform: translate(-50%, -50%); width: 74px; padding: 5px 4px;
+  background: var(--w95-face); cursor: pointer; text-align: center;
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite);
+}
+.wm-node:hover { filter: brightness(1.08); }
+.wm-node.selected { box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px var(--w95-hi); }
+.wm-node.locked { filter: grayscale(1) brightness(0.7); cursor: default; }
+.wm-node.current { outline: 2px solid #f2d16b; outline-offset: 1px; }
+.wm-dot { width: 100%; height: 22px; box-shadow: inset 1px 1px rgba(255,255,255,.3), inset -1px -1px rgba(0,0,0,.4); }
+.wm-name { font-size: 8px; font-weight: bold; line-height: 1.25; margin-top: 3px; }
+.wm-icons { font-size: 9px; line-height: 1; margin-top: 2px; letter-spacing: 1px; }
+.wm-danger { font-size: 7px; margin-top: 2px; }
+.wm-you { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); font-size: 8px; background: #f2d16b; color: #3a2a00; padding: 1px 3px; font-weight: bold; }
+.wm-detail { width: 560px; max-width: 92vw; min-height: 56px; margin-top: 8px; padding: 8px; font-size: 11px; line-height: 1.5; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.wm-detail .wm-rec { color: #2a6a8a; }
+.wm-detail .wm-warn { color: #b01030; font-weight: bold; }
+.wm-detail .wm-lore { color: #555; font-style: italic; }
+#wm-travel:disabled { color: #808080; cursor: default; filter: none; }
+
+/* ============================================================
+   PHASE 5 — Web3 / online windows
+   ============================================================ */
+.menu-wallet { text-align: center; font-size: 11px; color: #333; }
+.menu-wallet b { color: #2a6a8a; }
+.menu-wallet.verified b { color: #2a8a4a; }
+.menu-wallet.locked { opacity: 0.7; }
+.menu-wallet.locked b { color: #8a6a2a; }
+.demo-badge {
+  margin-top: 8px; text-align: center; font-size: 9px; letter-spacing: 1px;
+  color: #7d1330; opacity: 0.8; text-transform: uppercase;
+  padding: 4px 8px; align-self: center;
+  box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow);
+}
+
+.wallet-body { width: 340px; max-width: 84vw; text-align: center; }
+.wallet-crest { font-size: 40px; color: #7d1330; margin: 2px 0 6px; }
+.wallet-steps { text-align: left; margin: 10px auto; padding-left: 26px; font-size: 12px; line-height: 1.9; width: fit-content; }
+.wallet-steps li { color: #777; }
+.wallet-steps li.done { color: #2a8a4a; font-weight: bold; }
+.wallet-steps li.done::marker { content: '\2714  '; }
+.wallet-steps li.active { color: #202020; font-weight: bold; }
+.wallet-steps li.fail { color: #b01030; font-weight: bold; }
+.wallet-status { font-size: 11px; color: #333; margin-top: 8px; padding: 8px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.wallet-status.err { color: #b01030; }
+.wallet-status.ok { color: #2a8a4a; }
+.w95-btn.locked { opacity: 0.7; cursor: not-allowed; }
+.soon-tag { font-size: 8px; color: #8a6a2a; background: #f0e0b0; padding: 1px 4px; margin-left: 4px; box-shadow: inset -1px -1px rgba(0,0,0,.25), inset 1px 1px rgba(255,255,255,.5); vertical-align: middle; }
+
+.profile-body { width: 360px; max-width: 86vw; font-size: 12px; }
+.profile-row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 8px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); margin-bottom: 3px; }
+.profile-row span:first-child { color: #555; }
+.profile-row b { color: #7d1330; text-align: right; }
+.profile-section { font-size: 10px; color: #7d1330; font-weight: bold; margin: 10px 0 5px; }
+.profile-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.profile-tag { font-size: 9px; padding: 4px 7px; background: #d8d0e8; box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi); }
+.profile-tag.empty { background: var(--w95-face); color: #888; }
+
+.admin-rules { display: flex; flex-direction: column; gap: 5px; width: 380px; max-width: 88vw; max-height: 42vh; overflow-y: auto; }
+.admin-rule { display: grid; grid-template-columns: 40px 40px 1fr 24px; gap: 5px; align-items: center; font-size: 11px; }
+.admin-rule input, .admin-rule select { font-family: inherit; font-size: 11px; padding: 2px 3px; background: #fff; border: none; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.admin-rule .rm { cursor: pointer; color: #b01030; font-weight: bold; text-align: center; }
+
+/* ============================================================
+   PHASE 7 — Live ecosystem (season / battle pass / missions /
+   cosmetics / accessibility). Cosmetic + progression UI only.
+   ============================================================ */
+/* Global UI scaling (accessibility) applied to floating windows. */
+.game-dialog { transform: translate(-50%, -50%) scale(var(--ui-scale)); }
+
+.eco-body { width: 400px; max-width: 88vw; }
+.eco-muted { color: #555; font-size: 10px; }
+.eco-section { font-size: 10px; color: #7d1330; font-weight: bold; margin: 10px 0 6px; }
+.eco-hero { text-align: center; margin-bottom: 10px; }
+.eco-hero-title { font-family: 'Press Start 2P', monospace; font-size: 12px; color: #7d1330; margin-bottom: 6px; line-height: 1.5; }
+.eco-bar { height: 14px; background: #7a7a7a; box-shadow: inset 1px 1px var(--w95-shadow), inset -1px -1px var(--w95-hi); overflow: hidden; }
+.eco-bar.sm { height: 8px; margin: 3px 0; }
+.eco-bar-fill { height: 100%; background: repeating-linear-gradient(90deg, #2a8a4a 0 6px, #34a058 6px 12px); }
+.eco-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 8px 0; }
+.eco-card { display: flex; flex-direction: column; gap: 3px; padding: 8px; cursor: pointer; background: var(--w95-face); border: none; text-align: center;
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite); }
+.eco-card:active { box-shadow: inset 1px 1px var(--w95-dark), inset -1px -1px var(--w95-hi); }
+.eco-card b { font-size: 11px; color: #7d1330; } .eco-card span { font-size: 9px; color: #555; }
+.eco-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.eco-stats div { display: flex; justify-content: space-between; padding: 4px 8px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); font-size: 11px; }
+.eco-stats b { color: #7d1330; }
+
+/* Battle pass */
+.bp-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 8px 0; font-size: 10px; }
+/* Battle pass — horizontal sliding track (AAA presentation) */
+.bp-body { max-width: 760px; }
+.bp-head-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.bp-head-title { font-family: 'Press Start 2P', monospace; font-size: 12px; color: #7d1330; }
+.bp-tier-badge { background: #7d1330; color: #ffd; font-size: 9px; padding: 2px 6px; margin-left: 6px; }
+.bp-xp-label { font-size: 11px; color: #2a2a3a; font-variant-numeric: tabular-nums; }
+.bp-xp-bar { height: 16px; margin: 7px 0 3px; background: #05060a; border: 2px solid #3a2a4a; box-shadow: inset 2px 2px 0 rgba(0,0,0,.5); overflow: hidden; }
+.bp-xp-fill { height: 100%; background: repeating-linear-gradient(90deg,#ff5a8a 0 12px,#ff86a8 12px 24px); box-shadow: 0 0 10px rgba(255,90,138,.7); transition: width .5s ease; }
+.bp-xp-hint { font-size: 9px; }
+.bp-access { margin: 8px 0; }
+.bp-access-on { font-size: 10px; color: #2a8a4a; font-weight: bold; padding: 6px 8px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.bp-access-off { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 10px; color: #7d1330; padding: 7px 9px; background: #f0e0b0; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.bp-track-wrap { position: relative; }
+.bp-track { display: flex; gap: 10px; overflow-x: auto; padding: 6px 2px 12px; scroll-snap-type: x mandatory; scrollbar-width: thin; cursor: grab; width: min(700px, 90vw); }
+.bp-track.dragging { cursor: grabbing; scroll-snap-type: none; }
+.bp-track::-webkit-scrollbar { height: 10px; } .bp-track::-webkit-scrollbar-thumb { background: #7d1330; }
+.bp-col { flex: 0 0 128px; scroll-snap-align: center; display: flex; flex-direction: column; gap: 8px; }
+.bp-col-tier { text-align: center; font-size: 8px; color: #8a8a9a; letter-spacing: 1px; padding: 3px; background: #cfc7d8; box-shadow: inset 1px 1px var(--w95-shadow); }
+.bp-col-tier b { font-size: 15px; color: #4a3a5a; }
+.bp-col.reached .bp-col-tier { background: #2a8a4a; } .bp-col.reached .bp-col-tier, .bp-col.reached .bp-col-tier b { color: #fff; }
+.bp-reward { position: relative; border-radius: 2px; padding: 8px 6px; text-align: center; min-height: 118px; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: linear-gradient(160deg,#2a1830,#191024); box-shadow: inset 0 0 0 1px #4a3a5a, 0 2px 6px rgba(0,0,0,.4); overflow: hidden; }
+.bp-reward-tag { font-size: 7px; letter-spacing: 1px; color: #b98cff; font-weight: bold; }
+.bp-reward.locked .bp-reward-tag { color: #e0a020; }
+.bp-mystery { width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 6px;
+  background: radial-gradient(circle at 40% 35%, #6a4a8a, #2a1830); box-shadow: inset 0 0 8px rgba(0,0,0,.6); filter: blur(1.2px); }
+.bp-mystery-ico { font-size: 30px; color: rgba(255,255,255,.55); font-weight: bold; text-shadow: 0 0 12px rgba(185,140,255,.9); filter: blur(1px); }
+.bp-reward-name { font-size: 9px; color: #e8def8; line-height: 1.25; filter: blur(2.4px); user-select: none; }
+.bp-reward-note { font-size: 7px; color: #8a7aa0; font-style: italic; }
+.bp-reward-state { margin-top: auto; font-size: 8px; font-weight: bold; padding: 3px 6px; width: 100%; }
+.bp-reward-state.claim { background: #ffd24f; color: #3a2a00; cursor: pointer; animation: bpPulse 1.4s ease-in-out infinite; }
+.bp-reward-state.claimed { background: #2a8a4a; color: #fff; }
+.bp-reward-state.locked { color: #e0a020; }
+.bp-reward.claimable { box-shadow: inset 0 0 0 2px #ffd24f, 0 0 14px rgba(255,210,79,.4); cursor: pointer; }
+.bp-reward.future { opacity: .5; } .bp-reward.locked .bp-mystery { filter: blur(1.2px) grayscale(.5); }
+@keyframes bpPulse { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.2); } }
+.bp-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 30px; height: 46px; font-size: 16px; background: var(--w95-face); cursor: pointer; box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite); }
+.bp-nav-l { left: -6px; } .bp-nav-r { right: -6px; }
+.bp-foot-note { text-align: center; font-size: 9px; color: #7d1330; font-style: italic; margin-top: 6px; }
+
+/* Seasonal leaderboard */
+.lb-body { max-width: 460px; }
+.lb-season-head { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: linear-gradient(120deg,#2a1830,#3a1030); box-shadow: inset 0 0 0 1px #5a3a6a; }
+.lb-season-badge { font-family: 'Press Start 2P', monospace; font-size: 12px; color: #ffd24f; text-shadow: 2px 2px 0 #2a0010; padding: 8px 10px; background: rgba(0,0,0,.3); box-shadow: inset 0 0 0 2px #7d1330; }
+.lb-season-name { font-size: 14px; font-weight: bold; color: #f0e0ff; }
+.lb-season-timer { font-size: 10px; color: #c8b0e0; } .lb-season-timer b { color: #ffd24f; }
+.lb-me { display: flex; align-items: center; gap: 12px; padding: 7px 10px; margin-bottom: 8px; background: #d8e8d0; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.lb-me-rank { font-family: 'Press Start 2P', monospace; font-size: 14px; color: #2a6a3a; }
+.lb-me-stats { display: flex; gap: 14px; font-size: 10px; color: #444; } .lb-me-stats b { color: #7d1330; }
+.lb-head, .lb-row { display: grid; grid-template-columns: 40px 1fr 72px 48px; gap: 6px; align-items: center; font-size: 11px; }
+.lb-head { font-weight: bold; color: #7d1330; padding: 2px 6px; border-bottom: 2px solid var(--w95-shadow); }
+.lb-rows { width: 430px; max-width: 90vw; max-height: 30vh; overflow-y: auto; }
+.lb-row { padding: 5px 6px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); margin-top: 3px; }
+.lb-row.me { background: #d8e8d0; }
+.lb-row .lb-xp, .lb-row .lb-wins { text-align: right; font-variant-numeric: tabular-nums; }
+.lb-row .lb-rank { font-weight: bold; }
+.lb-row.top1 { background: linear-gradient(90deg,#fff6d0,#fff); } .lb-row.top2 { background: linear-gradient(90deg,#eef0f4,#fff); } .lb-row.top3 { background: linear-gradient(90deg,#f4e0cc,#fff); }
+.lb-empty { font-size: 11px; color: #777; padding: 10px; text-align: center; }
+.lb-rewards { margin-top: 10px; }
+.lb-rewards-title { font-size: 10px; font-weight: bold; color: #7d1330; margin-bottom: 5px; }
+.lb-reward-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(78px,1fr)); gap: 6px; }
+.lb-reward-card { text-align: center; padding: 8px 4px; background: linear-gradient(160deg,#2a1830,#191024); box-shadow: inset 0 0 0 1px #4a3a5a; }
+.lb-rw-lbl { display: block; font-size: 7px; letter-spacing: 1px; color: #b98cff; font-weight: bold; margin-bottom: 4px; }
+.lb-blur { display: block; font-family: monospace; font-size: 13px; color: #e8def8; filter: blur(2.6px); letter-spacing: 1px; user-select: none; }
+.lb-icon-blur { display: block; font-size: 20px; filter: blur(2px); }
+.lb-info { margin-top: 10px; padding: 9px; background: #efeae0; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.lb-info-title { font-size: 10px; font-weight: bold; color: #7d1330; margin-bottom: 4px; }
+.lb-info p { font-size: 10px; color: #444; line-height: 1.5; margin: 0; }
+
+/* Missions */
+.mis-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 6px; }
+.mis-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.mis-row.done { background: #fff3c0; } .mis-row.claimed { background: #cfe8cf; }
+.mis-info { flex: 1; } .mis-info b { font-size: 11px; }
+.mis-claim { min-width: 60px; }
+
+/* Cosmetics */
+.cos-equipped { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 6px; }
+.cos-slot { display: flex; flex-direction: column; padding: 5px 7px; box-shadow: inset -1px -1px var(--w95-hi), inset 1px 1px var(--w95-shadow); }
+.cos-slot b { font-size: 10px; color: #7d1330; }
+.cos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; max-height: 40vh; overflow-y: auto; }
+.cos-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; font-size: 9px; cursor: pointer; background: var(--w95-face); border: none;
+  box-shadow: inset -1px -1px var(--w95-dark), inset 1px 1px var(--w95-hi), inset -2px -2px var(--w95-shadow), inset 2px 2px var(--w95-lite); }
+.cos-item.equipped { background: #cfe8cf; }
+.cos-ico { font-size: 20px; }
+
+/* Accessibility */
+.a11y-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 4px; border-bottom: 1px solid var(--w95-shadow); font-size: 12px; }
+.a11y-row select, .a11y-row input[type=range] { font-family: inherit; }
+
+/* Streamer mode: hide wallet + personal info anywhere it is shown. */
+body.streamer-mode .menu-wallet,
+body.streamer-mode #menu-wallet-addr,
+body.streamer-mode .profile-row:nth-child(1) b,
+body.streamer-mode .lb-row .lb-wallet { filter: blur(5px); }
+body.streamer-mode .menu-wallet b { filter: blur(5px); }
+
+/* Colour-blind palettes (swap the reward-bar greens / accent hues). */
+:root[data-colorblind="protanopia"] .eco-bar-fill { background: repeating-linear-gradient(90deg,#2a6ad0 0 6px,#3a80e0 6px 12px); }
+:root[data-colorblind="deuteranopia"] .eco-bar-fill { background: repeating-linear-gradient(90deg,#c08a00 0 6px,#e0a020 6px 12px); }
+:root[data-colorblind="tritanopia"] .eco-bar-fill { background: repeating-linear-gradient(90deg,#c02a6a 0 6px,#e03a80 6px 12px); }
