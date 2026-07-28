@@ -9,6 +9,18 @@
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 </head>
 <body>
+  <!-- ============ FULL-SCREEN LOADING SCREEN (Phase 7.6) ============ -->
+  <div id="loading-screen">
+    <div class="load-inner">
+      <div class="load-logo">HOODLUST</div>
+      <div class="load-logo-sub">SURVIVOR</div>
+      <div class="load-msg" id="load-msg">Loading&hellip;</div>
+      <div class="load-bar"><div class="load-fill" id="load-fill"></div></div>
+      <div class="load-pct" id="load-pct">0%</div>
+      <div class="load-hint">DEMO VERSION &middot; Please wait</div>
+    </div>
+  </div>
+
   <!-- Phaser injects its <canvas> here -->
   <div id="game-root"></div>
 
